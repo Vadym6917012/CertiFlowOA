@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/src/server/CertiFlowOA/appsettings.json
+/src/server/CertiFlowOA/appsettings.Development.json
