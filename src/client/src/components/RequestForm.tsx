@@ -168,6 +168,7 @@ const RequestForm = ({ onSuccess }: RequestFormProps) => {
               placeholder="Наприклад: для подання до деканату"
               required
               disabled={isSubmitting}
+              maxLength={500}
               aria-describedby="purposeHelp"
             />
             <div id="purposeHelp" className="form-text">

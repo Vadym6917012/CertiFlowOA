@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import RequestForm from "../components/RequestForm";
 import RequestList from "../components/RequestList";
-import Sidebar from "../components/Sidebar";
 import apiClient from "../api/apiClient";
 import { Order } from "../api/types/order";
 
@@ -15,7 +14,6 @@ export default function StudentDashboard() {
       setLoading(true);
       const response = await apiClient.get<Order[]>("/Orders/get-my-orders");
       setOrders(response.data);
-      console.log("Orders fetched:", response.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -28,45 +26,31 @@ export default function StudentDashboard() {
   }, [fetchOrders]);
 
   return (
-    <>
-      <div className="container-fluid">
-        <div className="row">
-          <Sidebar />
+      <div className="container">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <button
+          className="btn btn-outline-primary d-md-none"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mobileSidebar"
+        >
+          ☰ Меню
+        </button>
 
-          <Sidebar isOffcanvas={true} />
-          <main
-            className="dashboard main-bg-gray py-4 col-md-9 ms-sm-auto col-lg-10 px-md-4 min-vh-100"
-            id="dashboard-container"
-          >
-            <div className="container">
-              <div className="dashboard-header mb-4 d-flex justify-content-between">
-                <button
-                  className="btn btn-outline-primary mb-3 d-md-none"
-                  type="button"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#mobileSidebar"
-                  aria-controls="mobileSidebar"
-                >
-                  ☰ Меню
-                </button>
-                <a
-                  onClick={() => setShowForm(!showForm)}
-                  className="toggle-form-button btn align-items-end"
-                >
-                  {showForm ? "Закрити форму" : "Замовити довідку"}
-                </a>
-              </div>
-
-              {showForm && <RequestForm onSuccess={fetchOrders} />}
-
-              <div className="orders-section secondary-bg-white">
-                <h2 className="orders-title">Мої замовлення</h2>
-                {<RequestList orders={orders} loading={loading} />}
-              </div>
-            </div>
-          </main>
-        </div>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className={`btn ${showForm ? "btn-outline-danger" : "btn-primary"}`}
+        >
+          {showForm ? "Закрити форму" : "➕ Замовити довідку"}
+        </button>
       </div>
-    </>
+
+      {showForm && <RequestForm onSuccess={fetchOrders} />}
+
+      <section className="mt-4">
+        <h2 className="h5 mb-3">Мої замовлення</h2>
+        <RequestList orders={orders} loading={loading} />
+      </section>
+    </div>
   );
 }

@@ -1,45 +1,60 @@
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-export default function Sidebar({ isOffcanvas = false }) {
-    const { logout } = useAuth();
+interface SidebarProps {
+  isOffcanvas?: boolean;
+}
 
-    const handleLogout = (e:any) => {
-        e.preventDefault();
-        logout();
-    }
+export default function Sidebar({ isOffcanvas = false }: SidebarProps) {
+  const { logout } = useAuth();
 
-    const sidebarTitle = (
-    <div className="sidebar-title mb-4 px-3">
-      <h5 className="fw-bold mb-0">Кабінет студента</h5>
-    </div>
-  );
+  const handleLogout = (e: any) => {
+    e.preventDefault();
+    logout();
+  };
 
   const sidebarContent = (
-    <>
-      {sidebarTitle}
+    <div>
+      <div className="sidebar-title mb-4 px-3">
+        <h5 className="fw-bold mb-0">Кабінет студента</h5>
+      </div>
+
       <ul className="nav flex-column px-3">
-        <li className="nav-item">
-          <a className="nav-link active" href="#">
-            Item 1
-          </a>
+        <li className="nav-item mb-2">
+          <NavLink
+            className={({ isActive }) =>
+              `nav-link ${
+                isActive ? "active fw-semibold text-primary" : "text-dark"
+              }`
+            }
+            to="/dashboard"
+          >
+            Замовлення довідок
+          </NavLink>
         </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">
-            Item 2
-          </a>
+        <li className="nav-item mb-2">
+          <NavLink
+            className={({ isActive }) =>
+              `nav-link ${
+                isActive ? "active fw-semibold text-primary" : "text-dark"
+              }`
+            }
+            to="/account"
+          >
+            Налаштування акаунта
+          </NavLink>
         </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">
-            Item 3
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link text-danger" href="#" onClick={handleLogout}>
+        <li className="nav-item mt-3">
+          <a
+            className="nav-link text-danger fw-semibold"
+            href="#"
+            onClick={handleLogout}
+          >
             Вихід
           </a>
         </li>
       </ul>
-    </>
+    </div>
   );
 
   if (isOffcanvas) {
@@ -67,7 +82,7 @@ export default function Sidebar({ isOffcanvas = false }) {
   }
 
   return (
-    <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar py-4">
+    <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light border-end min-vh-100 py-4">
       {sidebarContent}
     </nav>
   );
