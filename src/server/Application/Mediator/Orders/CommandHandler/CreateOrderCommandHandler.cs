@@ -2,11 +2,6 @@
 using Application.Mediator.Orders.Commands;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Mediator.Orders.CommandHandler
 {
@@ -14,18 +9,34 @@ namespace Application.Mediator.Orders.CommandHandler
     {
         private readonly IGenericRepository<Order> _orderRepo;
         private readonly IGenericRepository<Document> _docRepo;
+        private readonly IGenericRepository<DocumentType> _docTypeRepo;
 
-        public CreateOrderCommandHandler(IGenericRepository<Order> orderRepo, IGenericRepository<Document> docRepo)
+        public CreateOrderCommandHandler(
+            IGenericRepository<Order> orderRepo, 
+            IGenericRepository<Document> docRepo,
+            IGenericRepository<DocumentType> docTypeRepo)
         {
             _orderRepo = orderRepo;
             _docRepo = docRepo;
+            _docTypeRepo = docTypeRepo;
         }
 
         public async Task<int> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
+            if ( !Enum.IsDefined(typeof(DocumentFormat), request.Format) )
+                throw new ArgumentException($"Невірний формат документа: {request.Format}");
+
+            var documentType = await _docTypeRepo.GetByIdAsync(request.DocumentTypeId, cancellationToken);
+            if(documentType == null)
+            {
+                throw new ArgumentException($"Тип документа з ID: {request.DocumentTypeId} не знайдено.");
+            }
+
             var document = new Document
             {
                 DocumentTypeId = request.DocumentTypeId,
+                DocumentType = documentType,
+                Status = DocumentStatus.New,
                 CreatedDate = DateTime.UtcNow
             };
 
@@ -35,7 +46,6 @@ namespace Application.Mediator.Orders.CommandHandler
             var order = new Order
             {
                 UserId = request.UserId,
-                DocumentId = document.DocumentId, // <- беремо ID створеного документа
                 Document = document,
                 Purpose = request.Purpose,
                 Format = request.Format,

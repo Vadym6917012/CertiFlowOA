@@ -1,10 +1,31 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RequestForm from "../components/RequestForm";
 import RequestList from "../components/RequestList";
 import Sidebar from "../components/Sidebar";
+import apiClient from "../api/apiClient";
+import { Order } from "../api/types/order";
 
 export default function StudentDashboard() {
   const [showForm, setShowForm] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get<Order[]>("/Orders/get-my-orders");
+      setOrders(response.data);
+      console.log("Orders fetched:", response.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   return (
     <>
@@ -36,11 +57,11 @@ export default function StudentDashboard() {
                 </a>
               </div>
 
-              {showForm && <RequestForm />}
+              {showForm && <RequestForm onSuccess={fetchOrders} />}
 
               <div className="orders-section secondary-bg-white">
                 <h2 className="orders-title">Мої замовлення</h2>
-                {<RequestList />}
+                {<RequestList orders={orders} loading={loading} />}
               </div>
             </div>
           </main>

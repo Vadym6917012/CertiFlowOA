@@ -4,7 +4,6 @@ using Infrastructure.Data;
 using Infrastructure.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);

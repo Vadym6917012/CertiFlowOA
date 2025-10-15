@@ -115,8 +115,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("SignedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("DocumentId");
 
@@ -265,8 +268,11 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Format")
-                        .HasColumnType("int");
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Purpose")
                         .IsRequired()

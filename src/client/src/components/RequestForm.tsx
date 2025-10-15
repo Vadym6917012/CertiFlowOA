@@ -1,24 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import apiClient from "../api/apiClient";
-
-type DocumentType = {
-  documentTypeId: number;
-  name: string;
-};
-
-type DocumentFormat = "paper" | "digital";
-
-interface User {
-  accessToken: string;
-}
+import { DocumentFormat } from "../api/types/documentFormat";
+import { User } from "../api/types/user";
+import { DocumentType } from "../api/types/documentType";
 
 const API_ENDPOINTS = {
   DOCUMENT_TYPES: "/DocumentType",
   ORDERS: "/Orders/create",
 };
 
-const RequestForm = () => {
+interface RequestFormProps {
+  onSuccess: () => void;
+}
+
+const RequestForm = ({ onSuccess }: RequestFormProps) => {
   const [format, setFormat] = useState<DocumentFormat>();
   const [purpose, setPurpose] = useState("");
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
@@ -34,7 +30,7 @@ const RequestForm = () => {
       console.log("Document types loaded:", response.data);
     } catch (error) {
       console.error("Error loading document types:", error);
-      toast.error("Failed to load document types");
+      toast.error("Не вдалося завантажити типи документів");
     } finally {
       setIsLoading(false);
     }
@@ -48,8 +44,9 @@ const RequestForm = () => {
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      if (selectedType === "" || !format || !purpose) {
-        toast.error("Please fill all fields!", { position: "bottom-right" });
+      if (selectedType === "" || !format || !purpose.trim()) {
+        console.log(selectedType, format, purpose);
+        toast.error("Будь ласка, заповніть всі поля!", { position: "bottom-right" });
         return;
       }
 
@@ -60,7 +57,7 @@ const RequestForm = () => {
         const token = user?.accessToken;
 
         if (!token) {
-          toast.error("User not authenticated.", { position: "bottom-right" });
+          toast.error("Користувача не авторизований.", { position: "bottom-right" });
           return;
         }
 
@@ -70,21 +67,25 @@ const RequestForm = () => {
           format: format,
         });
 
-        toast.success("Order created successfully!", { position: "bottom-right" });
+        toast.success("Замовлення успішно створено!", { position: "bottom-right" });
+
+        onSuccess?.();
 
         // Reset form
         setSelectedType("");
         setFormat(undefined);
         setPurpose("");
-      } catch (error) {
-        console.error("Order creation error:", error);
-        toast.error("Error creating order. Please try again.");
+      } catch (error: any) {
+        if (error.response?.data) {
+          toast.error(error.response.data);
+        } else {
+          toast.error("Помилка при створенні замовлення. Будь ласка, спробуйте ще раз.");
+        }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [selectedType, format, purpose]
-  );
+    [selectedType, format, purpose, onSuccess]);
 
   if (isLoading) {
     return (
@@ -99,10 +100,10 @@ const RequestForm = () => {
   return (
     <div className="request-form-section secondary-bg-white">
       <div className="card-body">
-        <h2 className="mb-4">Request Document</h2>
+        <h2 className="mb-4">Замовити довідку</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="documentType" className="form-label">Document Type</label>
+            <label htmlFor="documentType" className="form-label">Тип документа</label>
             <select
               id="documentType"
               className="form-select"
@@ -110,9 +111,9 @@ const RequestForm = () => {
               onChange={(e) => setSelectedType(e.target.value ? Number(e.target.value) : "")}
               required
               disabled={isSubmitting}
-              aria-label="Select document type"
+              aria-label="Оберіть тип документа"
             >
-              <option value="">Select document type</option>
+              <option value="">Оберіть тип документа</option>
               {documentTypes.map((docType) => (
                 <option key={docType.documentTypeId} value={docType.documentTypeId}>
                   {docType.name}
@@ -122,57 +123,55 @@ const RequestForm = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Format</label>
+            <label className="form-label">Формат</label>
             <div className="d-flex gap-3">
               <div className="form-check">
                 <input
                   type="radio"
                   id="paper"
                   name="format"
-                  value="paper"
                   className="form-check-input"
-                  checked={format === "paper"}
-                  onChange={() => setFormat("paper")}
+                  checked={format === DocumentFormat.Paper}
+                  onChange={() => setFormat(DocumentFormat.Paper)}
                   disabled={isSubmitting}
                   required
                 />
                 <label className="form-check-label" htmlFor="paper">
-                  Paper
+                  Паперовий
                 </label>
               </div>
               <div className="form-check">
                 <input
                   type="radio"
-                  id="digital"
+                  id="electronic"
                   name="format"
-                  value="digital"
                   className="form-check-input"
-                  checked={format === "digital"}
-                  onChange={() => setFormat("digital")}
+                  checked={format === DocumentFormat.Electronic}
+                  onChange={() => setFormat(DocumentFormat.Electronic)}
                   disabled={isSubmitting}
                 />
                 <label className="form-check-label" htmlFor="digital">
-                  Digital
+                  Цифровий
                 </label>
               </div>
             </div>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="purpose" className="form-label">Purpose</label>
+            <label htmlFor="purpose" className="form-label">Призначення довідки</label>
             <input
               id="purpose"
               type="text"
               className="form-control"
               value={purpose}
               onChange={(e) => setPurpose(e.target.value)}
-              placeholder="Example: for submission to the dean's office"
+              placeholder="Наприклад: для подання до деканату"
               required
               disabled={isSubmitting}
               aria-describedby="purposeHelp"
             />
             <div id="purposeHelp" className="form-text">
-              Please describe what you need this document for
+              Будь ласка, опишіть, для чого вам потрібен цей документ
             </div>
           </div>
 
@@ -184,10 +183,10 @@ const RequestForm = () => {
             {isSubmitting ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Processing...
+                Обробка...
               </>
             ) : (
-              "Submit Order"
+              "Подати замовлення"
             )}
           </button>
         </form>

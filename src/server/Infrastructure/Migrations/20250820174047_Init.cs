@@ -79,7 +79,7 @@ namespace Infrastructure.Migrations
                     DocumentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DocumentTypeId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SignedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -271,7 +271,7 @@ namespace Infrastructure.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DocumentId = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Format = table.Column<int>(type: "int", nullable: false),
+                    Format = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },

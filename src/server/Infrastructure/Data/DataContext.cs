@@ -30,6 +30,24 @@ namespace Infrastructure.Data
             .HasForeignKey(u => u.FacultyId);
 
             modelBuilder.Entity<Order>()
+                .Property(o => o.Format)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (DocumentFormat)Enum.Parse(typeof(DocumentFormat), v)
+                )
+                .HasMaxLength(20)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Document>()
+                .Property(d => d.Status)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (DocumentStatus)Enum.Parse(typeof(DocumentStatus), v)
+                )
+                .HasMaxLength(20)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)
                 .WithMany(s => s.Orders)
                 .HasForeignKey(o => o.UserId);

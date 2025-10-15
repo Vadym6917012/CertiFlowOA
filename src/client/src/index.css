@@ -1,7 +1,7 @@
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.min.css";
 
-:root{
+:root {
     --radius: .5rem;
 }
 
@@ -16,7 +16,7 @@
 body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
     background: #f8f8f8;
 }
 
@@ -82,7 +82,8 @@ body {
     color: #fff;
 }
 
-.orders-section, .request-form-section  {
+.orders-section,
+.request-form-section {
     padding: 1.5rem;
     border-radius: var(--radius);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -98,4 +99,18 @@ body {
 
 .form-check-input:focus {
     box-shadow: none;
+}
+
+.student-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-orders-table tbody tr td {
+    font-size: 15px !important;
+    color: #808080 !important;
+    line-height: 1.2 !important;
+    font-weight: unset !important;
+    height: 50px !important;
+    vertical-align: middle;
 }

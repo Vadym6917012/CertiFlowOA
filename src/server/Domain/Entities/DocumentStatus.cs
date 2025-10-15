@@ -8,9 +8,10 @@ namespace Domain.Entities
 {
     public enum DocumentStatus
     {
-        New,
-        InReview,
-        Signed,
-        Rejected
+        New = 1,
+        InReview = 2,
+        Signed = 3,
+        Rejected = 4,
+        Completed = 5
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public enum DocumentFormat
+    public enum  DocumentFormat
     {
-        Paper,
-        Electronic
+        Paper = 1,
+        Electronic = 2
     }
 }

@@ -15,9 +15,14 @@ namespace Infrastructure.Services
             _context = context;
         }
 
-        public async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<T> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Set<T>().FindAsync(new object [] { id }, cancellationToken);
+        }
+
+        public async Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<T>().FindAsync(new object[] { id }, cancellationToken);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -25,6 +30,18 @@ namespace Infrastructure.Services
             return await _context.Set<T>()
                                  .AsNoTracking()
                                  .ToListAsync(cancellationToken);
+        }
+
+        public IQueryable<T> GetAll() => _context.Set<T>().AsQueryable();
+
+        public async Task<List<T>> ToListAsync(IQueryable<T> query, CancellationToken cancellationToken = default)
+        {
+            return await query.ToListAsync(cancellationToken);
+        }
+
+        public async Task<T> FirstOrDefaultAsync(IQueryable<T> query, CancellationToken cancellationToken = default)
+        {
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task AddAsync(T entity, CancellationToken cancellationToken = default)

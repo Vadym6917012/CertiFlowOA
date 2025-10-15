@@ -16,7 +16,12 @@ namespace Infrastructure.Services
             _ctx = ctx;
         }
 
-        public async Task<GoogleToken> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<GoogleToken> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _ctx.Set<GoogleToken>().FindAsync(new object [] { id }, cancellationToken);
+        }
+
+        public async Task<GoogleToken> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _ctx.Set<GoogleToken>().FindAsync(new object [] { id }, cancellationToken);
         }
@@ -53,6 +58,21 @@ namespace Infrastructure.Services
         public async Task<GoogleToken> GetByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await _ctx.Set<GoogleToken>().FirstOrDefaultAsync(t => t.UserId == userId, cancellationToken);
+        }
+
+        public IQueryable<GoogleToken> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GoogleToken>> ToListAsync(IQueryable<GoogleToken> query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<GoogleToken> FirstOrDefaultAsync(IQueryable<GoogleToken> query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

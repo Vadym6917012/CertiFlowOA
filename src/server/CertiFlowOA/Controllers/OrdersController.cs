@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Mediator.Orders.Commands;
+using Application.Mediator.Orders.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,20 @@ namespace CertiFlowOA.Controllers
 
             var orderId = await _mediator.Send(command);
             return Ok(new { orderId });
+        }
+
+        [HttpGet("get-my-orders")]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var query = new GetOrdersQuery
+            {
+                UserId = userId
+            };
+            var orders = await _mediator.Send(query);
+
+            return Ok(orders);
         }
     }
 }
